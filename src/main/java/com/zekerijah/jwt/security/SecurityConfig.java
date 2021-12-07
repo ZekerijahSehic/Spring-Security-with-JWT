@@ -27,6 +27,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
+        // 13 Before saving new user we must also encode password, see UserServiceImpl
     }
 
     // 2. WebSecurityConfigurerAdapter override methode
