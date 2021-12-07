@@ -23,16 +23,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 
+    // 5. First implement UserDetailsService in this class and then override method, which Spring uses to load users from
+    // db or wherever they might be
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
+        // 6. Looking for user by our repository
         User user = userRepository.findByUsername(username);
-
-        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        user.getRoles().forEach(role ->
-            { authorities.add(new SimpleGrantedAuthority(role.getName()));
-            });
-
 
         if(user == null) {
             log.error("User not found in the database");
@@ -41,6 +38,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             log.info("User found in the database: {} ", username);
         }
 
+
+        // 8. Need to create authorities, first create ArrayList, and then for our user looping trough all roles
+        // and for every single role we need create SimpleGrantedAuthority by passing role name and add role to list
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        user.getRoles().forEach(role ->
+            { authorities.add(new SimpleGrantedAuthority(role.getName()));
+            });
+
+        // 7. We need to return Spring Security User, for this User we need to pass username, password, and roles
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
     }
 
