@@ -1,7 +1,10 @@
 package com.zekerijah.jwt.security;
 
+import com.zekerijah.jwt.filter.CustomAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -33,6 +36,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authorizeRequests().anyRequest().permitAll();
+        // create filter for login ( new package filet )...
+        // we need parameter for CustomAuthenticationFilter() which is AuthenticationManager
+        http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean()));
 
+    }
+
+    // 11. AuthenticationManager is inside WebSecurityConfigurerAdapter and we can pass it in methode above
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        // we want call bean from class which we extends, with word super we refer to class which we extends
+        return super.authenticationManagerBean();
     }
 }
